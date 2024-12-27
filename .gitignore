@@ -1,0 +1,10 @@
+# Python compiled bytecode
+__pycache__/
+*.py[cod]
+.python-version
+
+# SQLite3 database
+db.sqlite3
+
+# Visual Studio Code
+*.code-workspace
