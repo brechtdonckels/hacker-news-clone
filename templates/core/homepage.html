@@ -1,0 +1,10 @@
+{% if stories %}
+    {% for story in stories %}
+    <div class="story-item">
+        {{ story.title }}
+        {{ story.url }}
+    </div>
+    {% endfor %}
+{% else %}
+    No stories have been submitted yet.
+{% endif %}
