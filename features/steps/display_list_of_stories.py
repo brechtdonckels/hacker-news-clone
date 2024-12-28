@@ -54,10 +54,10 @@ def step_then_see_list_of_stories(context):
     ), f"Expected {stories_count} stories to be displayed, but found {displayed_stories_count}."
 
 
-@then("each story should display its title and URL")
+@then("each story should display its title, URL and number of upvotes")
 def step_then_see_title_and_url(context):
     """
-    Verify that each story's title and URL are displayed on the page.
+    Verify that each story's title and URL are displayed on the page, as well as the number of upvotes.
     """
     # Get response content
     response_content = context.response.content.decode()
@@ -73,6 +73,9 @@ def step_then_see_title_and_url(context):
         assert (
             story.url in response_content
         ), f"Expected URL '{story.url}' to be in the response"
+        assert (
+            str(story.upvotes) in response_content
+        ), f"Expected number of upvotes '{str(story.upvotes)}' to be in the response"
 
 
 @then("the stories should be sorted by upvotes in descending order")

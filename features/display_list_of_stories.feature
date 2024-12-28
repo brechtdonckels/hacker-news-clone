@@ -10,7 +10,7 @@ Feature: Displaying a list of stories
       | Django Tips             | https://djangoproject.com | 10      |
     When I visit the homepage
     Then I should see a list of all stories
-    And each story should display its title and URL
+    And each story should display its title, URL and number of upvotes
     And the stories should be sorted by upvotes in descending order
 
   Scenario: User sees a message when no stories exist
