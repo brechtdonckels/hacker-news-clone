@@ -1,3 +1,18 @@
 <h1 class="story-title"><a href="{{ story.get_absolute_url }}">{{ story.title }}</a></h1>
 <span class="story-url">{{ story.url }}</span>
 <span class="story-upvotes">{{ story.upvotes }}</span>
+
+{% if story.comments.exists %}
+    <div class="comments-section">
+        <h3>Comments</h3>
+        <ul>
+            {% for comment in story.comments.all %}
+                <li>
+                    <strong>{{ comment.author.username }}</strong>: {{ comment.text }}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% else %}
+    <p>No comments yet. Be the first to comment!</p>
+{% endif %}

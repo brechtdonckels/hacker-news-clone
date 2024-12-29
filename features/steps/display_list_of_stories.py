@@ -108,12 +108,10 @@ def step_impl_sort_stories_by_upvotes(context):
     )
 
 
-@then('I should see a message saying "No stories have been submitted yet."')
-def step_then_see_no_stories_message(context):
+@then("I should see a message saying '{no_stories}'")
+def step_then_see_no_stories_message(context, no_stories):
     """
     Assert that the "no stories" message is displayed when there are no stories.
     """
     page_content = context.page.content()
-    assert (
-        "No stories have been submitted yet." in page_content
-    ), 'Expected "No stories have been submitted yet." to be in the response'
+    assert no_stories in page_content, f'Expected "{no_stories}" to be in the response'

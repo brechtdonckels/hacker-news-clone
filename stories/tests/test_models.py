@@ -1,13 +1,14 @@
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from stories.models import Story
+from accounts.models import User
+from stories.models import Comment, Story
 
 
 class StoryModelTest(TestCase):
-    def test_can_create_story_with_valid_data(self):
+    def test_can_create_story(self):
         """
-        Ensure we can create a Story instance with valid data.
+        Ensure we can create a Story instance.
         """
         story = Story.objects.create(
             title="Example Title",
@@ -58,3 +59,27 @@ class StoryModelTest(TestCase):
             url="https://example.com",
         )
         self.assertEqual(str(story), "Example Title")
+
+
+class CommentModelTest(TestCase):
+    def setUp(self):
+        """
+        Setup any initial data for the tests.
+        Create a story that comments will be attached to.
+        """
+        self.story = Story.objects.create(
+            title="Learn Python",
+            url="https://python.org",
+            upvotes=10,
+        )
+        self.user = User.objects.create_user(
+            username="alice", email="alice@example.com", password="password123"
+        )
+
+    def test_can_create_comment(self):
+        comment = Comment.objects.create(
+            author=self.user, text="This is a great resource!", story=self.story
+        )
+        self.assertEqual(comment.author.username, "alice")
+        self.assertEqual(comment.text, "This is a great resource!")
+        self.assertEqual(comment.story, self.story)
