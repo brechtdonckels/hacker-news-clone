@@ -91,7 +91,9 @@ def step_impl_sort_stories_by_upvotes(context):
         {
             "title": item.locator(".story-title").inner_text(),
             "url": item.locator(".story-url").inner_text(),
-            "upvotes": int(item.locator(".story-upvotes").inner_text()),
+            "upvotes": int(
+                item.locator(".story-upvotes").inner_text().split(":")[-1].strip()
+            ),
         }
         for item in story_items
     ]

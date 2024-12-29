@@ -1,18 +1,27 @@
-<h1 class="story-title"><a href="{{ story.get_absolute_url }}">{{ story.title }}</a></h1>
-<span class="story-url">{{ story.url }}</span>
-<span class="story-upvotes">{{ story.upvotes }}</span>
+<article class="story-detail">
+    <header>
+        <h1 class="story-title">
+            <a href="{{ story.get_absolute_url }}">{{ story.title }}</a>
+        </h1>
+        <p class="story-metadata">
+            <a class="story-url" href="{{ story.url }}" target="_blank" rel="noopener noreferrer">{{ story.url }}</a>
+            <span class="story-upvotes">Upvotes: {{ story.upvotes }}</span>
+        </p>
+    </header>
 
-{% if story.comments.exists %}
-    <div class="comments-section">
-        <h3>Comments</h3>
-        <ul>
-            {% for comment in story.comments.all %}
-                <li>
-                    <strong>{{ comment.author.username }}</strong>: {{ comment.text }}
-                </li>
-            {% endfor %}
-        </ul>
-    </div>
-{% else %}
-    <p>No comments yet. Be the first to comment!</p>
-{% endif %}
+    <section class="comments-section">
+        {% if story.comments.exists %}
+            <h2>Comments</h2>
+            <ul class="comments-list">
+                {% for comment in story.comments.all %}
+                    <li class="comment-item">
+                        <strong class="comment-author">{{ comment.author.username }}</strong>: 
+                        <span class="comment-text">{{ comment.text }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="no-comments">No comments yet. Be the first to comment!</p>
+        {% endif %}
+    </section>
+</article>
