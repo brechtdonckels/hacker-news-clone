@@ -12,4 +12,5 @@ dependencies = [
 dev = [
     "behave>=1.2.6",
     "behave-django>=1.4.0",
+    "playwright>=1.49.1",
 ]

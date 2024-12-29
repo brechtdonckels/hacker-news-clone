@@ -25,13 +25,13 @@ def step_given_no_stories_exist(context):
     Story.objects.all().delete()
 
 
-@when("I visit the homepage")
-def step_when_visit_homepage(context):
+@when("I visit the list of stories page")
+def step_when_visit_list_of_stories_page(context):
     """
-    Simulate visiting the homepage using Django's test client.
+    Simulate visiting the list of stories page using Django's test client.
     """
-    client = Client()
-    context.response = client.get(reverse("homepage"))
+    list_of_stories_link_url = context.test.live_server_url + reverse("stories:list")
+    context.page.goto(list_of_stories_link_url)
 
 
 @then("I should see a list of all stories")
@@ -39,19 +39,19 @@ def step_then_see_list_of_stories(context):
     """
     Assert that the number of stories displayed matches the number of stories in the database.
     """
-    # Get response content
-    response_content = context.response.content.decode()
+    # Get page content
+    page_content = context.page.content()
 
     # Determine the number of stories in the database
     stories_count = Story.objects.count()
 
     # Determine the number of stories found in the page
-    displayed_stories_count = response_content.count('<div class="story-item">')
+    stories_on_page_count = page_content.count('<div class="story-item">')
 
     # Check that the number of stories found in the page is the same as the number of stories in the database
     assert (
-        displayed_stories_count == stories_count
-    ), f"Expected {stories_count} stories to be displayed, but found {displayed_stories_count}."
+        stories_on_page_count == stories_count
+    ), f"Expected {stories_count} stories to be displayed, but found {stories_on_page_count}."
 
 
 @then("each story should display its title, URL and number of upvotes")
@@ -59,8 +59,8 @@ def step_then_see_title_and_url(context):
     """
     Verify that each story's title and URL are displayed on the page, as well as the number of upvotes.
     """
-    # Get response content
-    response_content = context.response.content.decode()
+    # Get page content
+    page_content = context.page.content()
 
     # Get all stories from the database
     stories = Story.objects.all()
@@ -68,38 +68,44 @@ def step_then_see_title_and_url(context):
     # Check if title and url are shown on the page for each story
     for story in stories:
         assert (
-            story.title in response_content
+            story.title in page_content
         ), f"Expected title '{story.title}' to be in the response"
         assert (
-            story.url in response_content
+            story.url in page_content
         ), f"Expected URL '{story.url}' to be in the response"
         assert (
-            str(story.upvotes) in response_content
+            str(story.upvotes) in page_content
         ), f"Expected number of upvotes '{str(story.upvotes)}' to be in the response"
 
 
 @then("the stories should be sorted by upvotes in descending order")
 def step_impl_sort_stories_by_upvotes(context):
     """
-    Verify that the stories are sorted by upvotes in descending order on the homepage.
+    Verify that the stories displayed on the page match the database order by upvotes.
     """
-    # Get the response content
-    response_content = context.response.content.decode()
+    # Get all story items from the page
+    story_items = context.page.locator(".story-item").all()
 
-    # Get all the stories from the database, but orderd by upvotes
-    stories = Story.objects.all().order_by("-upvotes")
+    # Extract titles and upvotes from the page
+    stories_on_page = [
+        {
+            "title": item.locator(".story-title").inner_text(),
+            "url": item.locator(".story-url").inner_text(),
+            "upvotes": int(item.locator(".story-upvotes").inner_text()),
+        }
+        for item in story_items
+    ]
 
-    # Check that stories are displayed in the same order as in the database
-    for i in range(1, len(stories)):
-        previous_title = stories[i - 1].title
-        current_title = stories[i].title
+    # Get stories from the database ordered by upvotes
+    stories_on_database = list(
+        Story.objects.all().order_by("-upvotes").values("title", "url", "upvotes")
+    )
 
-        previous_position = response_content.find(previous_title)
-        current_position = response_content.find(current_title)
-
-        assert (
-            previous_position < current_position
-        ), f"Expected '{previous_title}' to appear before '{current_title}' in the response."
+    # Compare the displayed stories with the database stories
+    assert stories_on_page == stories_on_database, (
+        f"Expected stories on the page to match the database order. "
+        f"Displayed: {stories_on_page}, Database: {stories_on_database}"
+    )
 
 
 @then('I should see a message saying "No stories have been submitted yet."')
@@ -107,7 +113,7 @@ def step_then_see_no_stories_message(context):
     """
     Assert that the "no stories" message is displayed when there are no stories.
     """
-    response_content = context.response.content.decode()
+    page_content = context.page.content()
     assert (
-        "No stories have been submitted yet." in response_content
+        "No stories have been submitted yet." in page_content
     ), 'Expected "No stories have been submitted yet." to be in the response'

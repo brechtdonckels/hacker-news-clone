@@ -1,3 +1,12 @@
-from django.shortcuts import render
+from django.views.generic import DetailView, ListView
 
-# Create your views here.
+from stories.models import Story
+
+
+class StoryListView(ListView):
+    model = Story
+    ordering = ["-upvotes"]
+
+
+class StoryDetailView(DetailView):
+    model = Story

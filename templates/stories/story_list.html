@@ -1,0 +1,11 @@
+{% if object_list %}
+    {% for story in object_list %}
+    <div class="story-item">
+        <a class="story-title" href="{{ story.get_absolute_url }}">{{ story.title }}</a>
+        <span class="story-url">{{ story.url }}</span>
+        <span class="story-upvotes">{{ story.upvotes }}</span>
+    </div>
+    {% endfor %}
+{% else %}
+    No stories have been submitted yet.
+{% endif %}
